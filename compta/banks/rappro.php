@@ -167,7 +167,7 @@ $sql.= " WHERE rappro=0 AND fk_account=".$acct->id;
 if (!empty($bordereau)) $sql.= " and b.fk_bordereau=".$bordereau;
 $sql.= " ORDER BY $sortfield $sortorder";
 $sql.= " LIMIT 1000";	// Limit to avoid page overload
-print $sql;
+
 /// ajax adjust value date
 print '
 <script type="text/javascript">
