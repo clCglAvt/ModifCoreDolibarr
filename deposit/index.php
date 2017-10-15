@@ -3,6 +3,7 @@
  * Copyright (C) 2007-2011 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2009      Regis Houssin        <regis.houssin@capnetworks.com>
  * Copyright (C) 2016      Juanjo Menent	    <jmenent@2byte.es>
+ * Copyright (C) 2017	   Claude Castellano    <claude@cigaleaventure.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,7 +136,7 @@ if ($resql)
 		print '</b></a></th>';
 		print '<th>'.$langs->trans("Date")."</th>";
 		print '<th>'.$langs->trans("Account").'</th>';
-		print '<th align="right">'.$langs->trans("NbOfCheques").'</th>';
+		print '<th align="right">'.$langs->trans("Number").'</th>';
 		print '<th align="right">'.$langs->trans("Amount").'</th>';
 		print '<th align="right">'.$langs->trans("Status").'</th>';
 		print "</tr>\n";

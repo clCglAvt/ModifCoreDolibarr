@@ -4,6 +4,7 @@
  * Copyright (C) 2009-2012	Regis Houssin			<regis.houssin@capnetworks.com>
  * Copyright (C) 2014		Alexandre Spangaro		<aspangaro.dolibarr@gmail.com>
  * Copyright (C) 2016		Juanjo Menent   		<jmenent@2byte.es>
+ * Copyright (C) 2017 		Claude Castellano       <claude@cigaleaventure.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -195,7 +196,7 @@ if ($resql)
 	print_liste_field_titre("DateCreation",$_SERVER["PHP_SELF"],"dp","",$param,'align="center"',$sortfield,$sortorder);
 	print_liste_field_titre("Account",$_SERVER["PHP_SELF"],"ba.label","",$param,"",$sortfield,$sortorder);
 	print_liste_field_titre("ModePaiement",$_SERVER["PHP_SELF"],"tp.libelle","",$param,'',$sortfield,$sortorder);
-	print_liste_field_titre("NbOfCheques",$_SERVER["PHP_SELF"],"bc.nbcheque","",$param,'align="right"',$sortfield,$sortorder);
+	print_liste_field_titre("NbOfDeposits",$_SERVER["PHP_SELF"],"bc.nbcheque","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre("Amount",$_SERVER["PHP_SELF"],"bc.amount","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre("Status",$_SERVER["PHP_SELF"],"bc.statut","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre('');

@@ -4,6 +4,7 @@
  * Copyright (C) 2005-2009 Regis Houssin        <regis.houssin@capnetworks.com>
  * Copyright (C) 2011-2016 Juanjo Menent        <jmenent@2byte.es>
  * Copyright (C) 2015      Marcos García        <marcosgdf@gmail.com>
+ * Copyright (C) 2017 Claude Castellano        <claude@cigaleaventure.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -132,7 +133,43 @@ class Deposit extends CommonObject
 			return -1;
 		}
 	}
+	/**
+	 * Constitue la liste des dépots concernant la requête émise par bankreis
+	 * 	@param string $sqlfrom		reprise des tables impactées par la requête de bankentries
+	 * 	@param string $sqlwhere		reprise des conditiond impactées par la requête de bankentries
+	 *	@return	array				-1 if KO,  renvoie un tableau de couple id, ref
+	**/
+	function fetch_all( $sqlfrom, $sqlwhere)
+	{
+		global $conf;
 
+		$sql = "SELECT distinct bc.rowid ,  bc.ref" ;
+		$sql.= $sqlfrom;
+		$sql.= $sqlwhere;
+		
+		dol_syslog(get_class($this)."::fetch - sql" .$sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+
+		$result = array();
+		if ($resql)
+		{
+			$i = 0;			
+			while ($obj=$this->db->fetch_object($resql))			
+			{	
+				$result[$i]['id'] = $obj->rowid;
+				$result[$i]['ref'] = $obj->ref;
+				$i++;	
+			}
+			$this->db->free($resql);
+
+			return $result;
+		}
+		else
+		{
+		    $this->error=$this->db->lasterror();
+			return -1;
+		}		
+	} //fetch_all
 	/**
 	 *	Create a receipt to send deposit's paiements
 	 *
@@ -181,6 +218,7 @@ class Deposit extends CommonObject
 
 		dol_syslog(get_class($this)."::Create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
+		
 		if ( $resql )
 		{
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."bordereau_cheque");
@@ -252,6 +290,7 @@ class Deposit extends CommonObject
 
 						dol_syslog(get_class($this)."::Create", LOG_DEBUG);
 						$resql = $this->db->query($sql);
+						
 						if (!$resql)
 						{
 							$this->errno = -18;
@@ -394,7 +433,6 @@ class Deposit extends CommonObject
 		$this->errno = 0;
 
 		$this->db->begin();
-		
 		$numref = $this->getNextNumRef();
 
 		if ($this->errno == 0 && $numref)
@@ -454,11 +492,11 @@ class Deposit extends CommonObject
 	{
 		global $conf, $db, $langs, $mysoc;
 		$langs->load("bills");
-
 		// Clean parameters (if not defined or using deprecated value)
 		if (empty($conf->global->CHEQUERECEIPTS_ADDON)) $conf->global->CHEQUERECEIPTS_ADDON='mod_chequereceipt_mint';
 		else if ($conf->global->CHEQUERECEIPTS_ADDON=='thyme') $conf->global->CHEQUERECEIPTS_ADDON='mod_chequereceipt_thyme';
 		else if ($conf->global->CHEQUERECEIPTS_ADDON=='mint') $conf->global->CHEQUERECEIPTS_ADDON='mod_chequereceipt_mint';
+		else if ($conf->global->CHEQUERECEIPTS_ADDON=='multimode') $conf->global->CHEQUERECEIPTS_ADDON='mod_chequereceipt_multimode';
 
 		if (! empty($conf->global->CHEQUERECEIPTS_ADDON))
 		{
@@ -466,7 +504,6 @@ class Deposit extends CommonObject
 
 			$file = $conf->global->CHEQUERECEIPTS_ADDON.".php";
 			$classname = $conf->global->CHEQUERECEIPTS_ADDON;
-
 			// Include file with class
 			$dirmodels = array_merge(array('/'), (array) $conf->modules_parts['models']);
 
@@ -504,7 +541,6 @@ class Deposit extends CommonObject
 				dol_print_error('',"Failed to include file ".$file);
 				return '';
 			}
-
 			$obj = new $classname();
 			$numref = "";
 			$numref = $obj->getNextValue($mysoc,$this);
@@ -979,7 +1015,6 @@ class Deposit extends CommonObject
 	function initAsSpecimen($option='')
 	{
 		global $user,$langs,$conf;
-
 		$now=dol_now();
 		$arraynow=dol_getdate($now);
 		$nownotime=dol_mktime(0, 0, 0, $arraynow['mon'], $arraynow['mday'], $arraynow['year']);
@@ -988,6 +1023,7 @@ class Deposit extends CommonObject
 		$this->id=0;
 		$this->ref = 'SPECIMEN';
 		$this->specimen=1;
+		$this->paiementcode = 'PPP';
 		$this->date_bordereau = $nownotime;
 	}
 

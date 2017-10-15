@@ -5,6 +5,7 @@
  * Copyright (C) 2011-2016	Juanjo Menent			<jmenent@2byte.es>
  * Copyright (C) 2013 		Philippe Grand      	<philippe.grand@atoo-net.com>
  * Copyright (C) 2015-2016  Alexandre Spangaro      <aspangaro.dolibarr@gmail.com>
+ * Copyright (C) 2017		Claude Castellano       <claude@cigaleaventure.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +44,6 @@ $ref=GETPOST('ref', 'alpha');
 $action=GETPOST('action', 'alpha');
 $confirm=GETPOST('confirm', 'alpha');
 $ref_ext = GETPOST('ref_ext');
-
 // Security check
 $fieldname = (! empty($ref)?'ref':'rowid');
 if ($user->societe_id) $socid=$user->societe_id;
@@ -65,7 +65,7 @@ $tabtoRemise = GETPOST('toRemise');
 $object = new Deposit($db);
 
 
-/*
+/*	
  * Actions
  */
 
@@ -214,7 +214,9 @@ if ($action == 'confirm_delete' && $confirm == 'yes' && $user->rights->banque->c
 if ($action == 'confirm_valide' && $confirm == 'yes' && $user->rights->banque->cheque)
 {
 	$result = $object->fetch($id);
+dol_syslog(  '<br>==================================AVANT VALIDATE');	
 	$result = $object->validate($user);
+dol_syslog(  '<br>==================================APRES VALIDATE');
 	if ($result >= 0)
 	{
         // Define output language
@@ -400,7 +402,8 @@ else
 	AfficheBordereau($object, $action);
 	AfficheRemis($object, $accounts);
 	AfficheBoutonValid($object, $user);
-		if ($object->statut == 0) {
+	
+	if ($object->statut == 0) {
 		print '<br><br><br>';
 		AfficheNonRemis($id, $filteraccountid,  $filterpaiementid, $filterdate, $accounts, $user, 'Completer'); 
 	}
@@ -614,7 +617,7 @@ function AfficheBordereau($object, $action)
 */
 function AfficheNonRemis($id, $filteraccountid, $filterpaiementid, $filterdate, $accounts, $user,  $titre)
 {
-	global $db, $langs, $conf , $sortfield, $sortorder; 
+	global $db, $langs, $conf , $sortfield, $sortorder, $action; 
 	$accountlinestatic=new AccountLine($db);
 	$paymentstatic=new Paiement($db);
 	
@@ -700,11 +703,11 @@ function AfficheNonRemis($id, $filteraccountid, $filterpaiementid, $filterdate, 
 			});
 			</script>
 			';
-
 			$num = $db->num_rows($resql);
 			print '<form action="'.$_SERVER["PHP_SELF"].'" method="POST">';
 			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-			print '<input type="hidden" name="action" value="complete">';
+			if ($action == 'new' ) print '<input type="hidden" name="action" value="create">';
+				else print '<input type="hidden" name="action" value="complete">';
 			print '<input type="hidden" name="accountid" value="'.$bid.'">';
 			print '<input type="hidden" name="paiementid" value="'.$accountpaiement["paiement"].'">';
 			print '<input type="hidden" name="id" value="'.$id.'">';
